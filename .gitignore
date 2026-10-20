@@ -1,0 +1,26 @@
+# Залежності
+node_modules/
+
+# Артефакти складання
+build/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Секрети та середовище
+.env
+.env.*
+*.pem
+*.key
+
+# Логи
+*.log
+npm-debug.log*
+
+# Системні файли
+.DS_Store
+Thumbs.db
+
+# Редактори
+.idea/
+*.swp
