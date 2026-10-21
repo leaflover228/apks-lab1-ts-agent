@@ -16,13 +16,13 @@
 
 ## Як запустити агента
 
-1. Відкрийте репозиторій у VS Code.
-2. Відкрийте Copilot Chat і виберіть режим **Agent**.
-3. Виберіть агента **build-engineer**.
-4. Запустіть prompt-команду `/init`.
+1. Відкрийте в VS Code корінь репозиторію, де видно каталог `.github`.
+2. Відкрийте GitHub Copilot Chat і виберіть harness **Local** та режим **Agent**. Workspace prompt-файли VS Code доступні в Local harness, а не в Copilot CLI harness.
+3. Виберіть custom agent **build-engineer**.
+4. Перейдіть на гілку `develop` і переконайтеся, що робоче дерево чисте.
+5. У полі чату введіть `/` і виберіть workspace prompt `project-init` із `.github/prompts/project-init.prompt.md` (не вбудовану команду `/init` — Initialize Copilot instructions), або введіть `/project-init` і виберіть саме prompt-файл.
 
-Команда послідовно виконує `/git-init`, `/create-project`, `/create-build`, `/create-actions` і `/check`. Агент оголошує успіх лише тоді, коли `/check` повертає `PASS`.
-
+Файл `project-init.prompt.md` задає ім'я workspace-команди `/project-init`. Оркестратор послідовно виконує `/git-init`, `/create-project`, `/create-build`, `/create-actions` і `/check`; він створює `feature/hello-world` лише після перевірки гілки `develop` і чистого дерева. Успіх оголошується лише тоді, коли `/check` повертає `PASS`.
 ## Як зібрати і запустити результат
 
 У корені створеного проєкту виконайте:

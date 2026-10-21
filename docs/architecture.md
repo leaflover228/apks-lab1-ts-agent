@@ -10,7 +10,7 @@
 - підготовка GitHub Actions workflow для Linux, Windows і macOS;
 - перевірка очікуваних файлів, тестів, збірки й CI перед оголошенням завершення.
 
-У гілці `develop` зберігається AI-конфігурація та документація; створення прикладного проєкту виконується відповідними prompts після запуску `/init`.
+У гілці `develop` зберігається AI-конфігурація та документація; створення прикладного проєкту виконується відповідними prompts після запуску `/project-init`.
 
 ## 2. Взаємодія manifest → skills → commands → orchestrator
 
@@ -19,13 +19,13 @@
 | Agent manifest `build-engineer.agent.md` | Skills і prompts/commands | Задає роль, область відповідальності, обмеження, критерії успіху й доступні робочі кроки. |
 | Skills | Використовуються відповідними commands | Надають спеціалізовані процедури scaffold, build/test і GitHub Actions. |
 | Commands/prompts | Застосовують skills, де це потрібно | Виконують окрему задачу: Git-перевірку, scaffold, build/test, CI або read-only перевірку. |
-| Orchestrator `/init` | Послідовно викликає `/git-init` → `/create-project` → `/create-build` → `/create-actions` → `/check` | Передає результати між етапами, перевіряє їх, зупиняється на помилці та формує підсумковий звіт. |
+| Orchestrator `/project-init` | Послідовно викликає `/git-init` → `/create-project` → `/create-build` → `/create-actions` → `/check` | Передає результати між етапами, перевіряє їх, зупиняється на помилці та формує підсумковий звіт. |
 
 Спрощений потік:
 
 ```mermaid
 flowchart TD
-    M["Agent manifest: build-engineer"] --> O["/init — orchestrator"]
+    M["Agent manifest: build-engineer"] --> O["/project-init — orchestrator"]
     M --> S1["Skill: project-scaffold"]
     M --> S2["Skill: build-and-test"]
     M --> S3["Skill: github-actions"]
@@ -48,6 +48,10 @@ flowchart TD
 
 Кожен skill міститься у власному `.github/skills/<name>/SKILL.md` і має опис призначення, вхідних даних, виходів, кроків, перевірок, помилок та ідемпотентності.
 
+Workspace prompts розташовані в `.github/prompts/*.prompt.md` і запускаються як slash-команди за базовою назвою файла у VS Code Chat з Local harness; наприклад, `project-init.prompt.md` дає `/project-init`. Вбудована команда Copilot `/init` призначена для Initialize Copilot instructions; для запуску цього оркестратора використовуйте `/project-init`.
+
+Примітка: Оркестратор названо `project-init` (роль init з методички), бо `/init` зайнята вбудованою командою Copilot.
+
 ## 4. Список commands
 
 - `/git-init` — перевіряє, що каталог уже є Git-репозиторієм, готує `.gitignore` і показує Git status та поточну гілку; не запускає `git init` автоматично.
@@ -55,7 +59,7 @@ flowchart TD
 - `/create-build` — застосовує `build-and-test`, встановлює залежності та запускає build і тести.
 - `/create-actions` — застосовує `github-actions` для створення workflow на основі наявних `ci.sh` і `ci.bat`.
 - `/check` — read-only перевіряє AI-конфігурацію, проєкт, build/test, workflow, Git tracking і секретоподібні рядки; виводить `PASS`, `FAIL` або дозволений `SKIPPED`.
-- `/init` — оркеструє всі п'ять команд у визначеному порядку та формує фінальний звіт.
+- `/project-init` — оркеструє всі п'ять команд у визначеному порядку та формує фінальний звіт.
 
 ## 5. Дані, що передаються між етапами init
 
@@ -69,7 +73,7 @@ flowchart TD
 
 ## 6. Обробка помилок оркестратором
 
-`/init` перевіряє результат кожного етапу перед передачею керування далі. Якщо крок або його обов'язкова перевірка завершується помилкою, оркестратор зупиняється: наступні commands не запускаються. У повідомленні зазначаються крок, причина з діагностики та дія для виправлення. Знайдені проблеми не виправляються автоматично способом, що перезаписує або видаляє дані.
+`/project-init` перевіряє результат кожного етапу перед передачею керування далі. Якщо крок або його обов'язкова перевірка завершується помилкою, оркестратор зупиняється: наступні commands не запускаються. У повідомленні зазначаються крок, причина з діагностики та дія для виправлення. Знайдені проблеми не виправляються автоматично способом, що перезаписує або видаляє дані.
 
 Якщо `/check` повертає `FAIL`, оркестратор перераховує невдалі перевірки й не оголошує проєкт завершеним. Якщо `/check` не запускався, результат позначається `NOT RUN` і загальний статус є неповним/невдалим, а не успішним.
 
@@ -88,7 +92,7 @@ flowchart TD
 | `.github/prompts/create-build.prompt.md` | Prompt налаштування build, тестів і локальних CI-скриптів. |
 | `.github/prompts/create-actions.prompt.md` | Prompt створення GitHub Actions workflow. |
 | `.github/prompts/check.prompt.md` | Read-only prompt комплексної перевірки. |
-| `.github/prompts/init.prompt.md` | Orchestrator, який координує послідовність prompts. |
+| `.github/prompts/project-init.prompt.md` | Orchestrator, який координує послідовність prompts. |
 | `README.md` | Опис лабораторної, вимог і використання агента/результату. |
 | `docs/architecture.md` | Опис компонентів, потоку команд, передачі даних і обмежень. |
 
@@ -102,4 +106,4 @@ flowchart TD
 - Заборонено видаляти файли, виконувати `git push --force` чи `git reset --hard`, переписувати історію Git, працювати з токенами/паролями/ключами або змінювати branch protection.
 - У workflow build/test команди делегуються `ci.sh` і `ci.bat`, а не дублюються inline.
 - Успіх не оголошується без перевірок; оркестрація вважається успішною лише за `/check: PASS`.
-- `git-init` не виконує `git init` автоматично. Manifest вимагає від `/init` створити або вибрати feature-гілку, але фактичний orchestrator наразі лише перевіряє Git status і назву гілки, а `git-init` не створює feature-гілку. Узгодьте цю розбіжність перед використанням, якщо перехід у feature-гілку є обов'язковою умовою лабораторної.
+- `git-init` не виконує `git init` автоматично. Manifest вимагає від `/project-init` створити або вибрати feature-гілку, але фактичний orchestrator наразі лише перевіряє Git status і назву гілки, а `git-init` не створює feature-гілку. Узгодьте цю розбіжність перед використанням, якщо перехід у feature-гілку є обов'язковою умовою лабораторної.

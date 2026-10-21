@@ -15,10 +15,10 @@ agent: build-engineer
 
 Виконай кожну перевірку незалежно та присвой результат `PASS`, `FAIL` або, лише за умовою нижче, `SKIPPED`.
 
-1. **AI-конфігурації:** перевір наявність `.github/agents/build-engineer.agent.md`, трьох skills `.github/skills/project-scaffold/SKILL.md`, `.github/skills/build-and-test/SKILL.md`, `.github/skills/github-actions/SKILL.md` і шести prompts `git-init`, `create-project`, `create-build`, `create-actions`, `check`, `init` у `.github/prompts/`.
+1. **AI-конфігурації:** перевір наявність `.github/agents/build-engineer.agent.md`, трьох skills `.github/skills/project-scaffold/SKILL.md`, `.github/skills/build-and-test/SKILL.md`, `.github/skills/github-actions/SKILL.md` і шести prompts `git-init`, `create-project`, `create-build`, `create-actions`, `check`, `project-init` у `.github/prompts/`.
 2. **Agent manifest:** перевір, що manifest містить розділи ролі, заборонених дій і критеріїв успішного завершення.
 3. **Skills:** перевір, що кожен із трьох skills містить розділи призначення, вхід, вихід і перевірки.
-4. **Порядок init:** перевір, що `.github/prompts/init.prompt.md` викликає команди в точному порядку `git-init` → `create-project` → `create-build` → `create-actions` → `check`.
+4. **Порядок project-init:** перевір, що `.github/prompts/project-init.prompt.md` викликає команди в точному порядку `git-init` → `create-project` → `create-build` → `create-actions` → `check`.
 5. **Файли проєкту:** перевір існування `src/`, `tests/`, `package.json`, `package-lock.json`, `tsconfig.json`, `ci.sh`, `ci.bat` і `.github/workflows/ci.yml`.
 6. **Build і тести:** перевір, що `npm run build` і `npm test` проходять, `build/hello` існує, а тест `BasicAddition` зелений. Не запускай команди, які створюють чи змінюють файли в робочому дереві; для виконання використовуй лише ізольовану тимчасову копію.
 7. **GitHub Actions:** перевір, що `ci.yml` є валідним YAML, містить `ubuntu-latest`, `windows-latest`, `macos-latest`, а всі значення `run:` містять лише виклики `ci.sh` або `ci.bat` без інших команд.

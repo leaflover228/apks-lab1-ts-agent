@@ -1,5 +1,5 @@
 ---
-description: "Оркеструй створення TypeScript Hello World, збірки, тестів і CI у feature-гілці."
+description: "Workspace prompt /project-init: оркеструй створення TypeScript Hello World, збірки, тестів і CI у feature-гілці."
 agent: build-engineer
 ---
 
@@ -17,7 +17,7 @@ agent: build-engineer
 
 1. `/git-init`
    - Переконайся, що це Git-репозиторій і `.gitignore` підготовлено.
-   - Перед переходом далі вимагай чисте робоче дерево на `develop`. Якщо `/git-init` щойно створив або змінив `.gitignore`, зупинись, попроси користувача окремо зберегти ці зміни в `develop`, а потім повторити `/init`.
+   - Перед переходом далі вимагай чисте робоче дерево на `develop`. Якщо `/git-init` щойно створив або змінив `.gitignore`, зупинись, попроси користувача окремо зберегти ці зміни в `develop`, а потім повторити `/project-init`.
    - Переконайся, що `feature/hello-world` ще не існує, та виконай `git switch -c feature/hello-world`. Якщо гілка вже існує, зупинись і попроси вибрати інше унікальне ім'я вручну; не переходь у невідому існуючу гілку.
 2. `/create-project`
 3. `/create-build`
