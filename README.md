@@ -30,6 +30,7 @@
 ```sh
 npm ci
 npm run build
+npm start
 npm test
 ./build/hello
 ```
